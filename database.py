@@ -28,8 +28,27 @@ c = conn.cursor()
 def edit():
 	editor = Tk()
 	editor.geometry("400x400")
-	editor.title("Update A code")
+	editor.title("Update A Record")
 
+
+	# create a database or connect to one
+
+	conn = sqlite3.connect("address_book.db")
+
+	#Create cursor
+	c = conn.cursor()
+
+	record_id = select_box.get()
+
+	#To Query the database and fetchs data 
+
+	c.execute("SELECT * FROM addresses_book WHERE oid = " + record_id)
+
+
+	records = c.fetchall()
+
+
+	
 	# Creating Text boxes for Editor Window
 
 	f_name_editor = Entry(editor, width = 30)
@@ -72,10 +91,22 @@ def edit():
 	zipcode_label_editor.grid(row = 5, column = 0)
 
 
-    #Create A Save Button
+
+	for record in records:
+		f_name_editor.insert(0, record[0])
+		l_name_editor.insert(0, record[1])
+		address_editor.insert(0, record[2])
+		city_editor.insert(0, record[3])
+		state_editor.insert(0, record[4])
+		zipcode_editor.insert(0, record[5])
+		
+
+    #Create A Save Button - save Edited Records
 	Save_btn = Button( editor, text = "Save", command = edit )
 	Save_btn.grid(row =11, column = 0, columnspan = 2, pady = 10, padx = 10, ipadx = 163)
 
+
+	# Loop through Results - Note the insert method is used to insert info into entry boxes
 
 
 

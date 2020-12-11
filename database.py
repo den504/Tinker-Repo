@@ -2,6 +2,9 @@ from tkinter import *
 from PIL import ImageTk,Image
 import sqlite3
 
+sqlite3.paramstyle = 'named'
+
+
 root = Tk()
 root.geometry("400x400")
 root.title("Learn to code")
@@ -24,10 +27,85 @@ c = conn.cursor()
 
 
 
+
+
+
+
+
+
+
+# Creating a Save function to update Records on database once we click the save button
+
+def savefunc():
+
+	# create a database or connect to one
+
+	conn = sqlite3.connect("address_book.db")
+
+	#Create cursor
+	c = conn.cursor()
+
+	# just so you know the triple quotes work in such a way in which you could 
+	# the first tab after the SQL command should indicate where you place the next command
+
+	# :first, :last, :address are all place holders we still needed to set them up by using dictionaries
+
+	# Recall we also had to make the variables for editors as a global variable on the edit function
+
+	# At line 45. we created the variable <record_id>, we did this such that we could easily add 'oid': record_id
+
+	# to the dictionary which in turn with the program knowing what to do when it sees oid = :oid , the program could then
+
+	# easily reference oid to record_id, then reference record_id to the select_box entry
+
+
+	# Also <editor> was made a global variable in the edit function in order to use a destroy method to close the editor
+
+	record_id = select_box.get()
+
+
+	c.execute("""UPDATE addresses_book SET
+		first_name = :first,
+		last_name = :last,
+		address = :address,
+		city = :city,
+		state = :state,
+		zipcode = :zipcode
+
+		WHERE oid = :oid """,
+		{
+		'first':f_name_editor.get(),
+		'last': l_name_editor.get(),
+		'address': address_editor.get(),
+		'city': city_editor.get(),
+		'state': state_editor.get(),
+		'zipcode': zipcode_editor.get(),
+		'oid': record_id
+		})
+
+
+	#commit changes
+	conn.commit()
+
+
+	#close connection
+	conn.close()
+
+
+	editor.destroy()
+
+
+
+
 # Create edit function to Update
+
+# we made <editor> a global variable because we needed to close to close the editor in the <savefun()> once the
+# records are updated 
+
 def edit():
+	global editor
 	editor = Tk()
-	editor.geometry("400x400")
+	editor.geometry("400x250")
 	editor.title("Update A Record")
 
 
@@ -46,6 +124,20 @@ def edit():
 
 
 	records = c.fetchall()
+
+
+	#Create Global variables for text box names
+		# The Reason why we created global variables for the below is we intended to uses
+		# the variable in the savefunc function; Therefore in order to use a variable definded in a function
+		# in another function we need to declare that variable as a global variable
+
+
+	global f_name_editor
+	global l_name_editor
+	global address_editor
+	global city_editor
+	global state_editor
+	global zipcode_editor
 
 
 	
@@ -99,10 +191,10 @@ def edit():
 		city_editor.insert(0, record[3])
 		state_editor.insert(0, record[4])
 		zipcode_editor.insert(0, record[5])
-		
+
 
     #Create A Save Button - save Edited Records
-	Save_btn = Button( editor, text = "Save", command = edit )
+	Save_btn = Button( editor, text = "Save", command = savefunc)
 	Save_btn.grid(row =11, column = 0, columnspan = 2, pady = 10, padx = 10, ipadx = 163)
 
 

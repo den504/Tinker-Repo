@@ -2,7 +2,7 @@ from tkinter import *
 from PIL import ImageTk,Image
 import sqlite3
 
-sqlite3.paramstyle = 'named'
+
 
 
 root = Tk()
